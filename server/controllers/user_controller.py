@@ -10,6 +10,10 @@ def get_users():
     users = User.query.all()
     return jsonify([user.to_dict() for user in users]), 200
 
+# @user_bp.route('/', methods=['GET'])
+# def get_user_by_id()
+
+
 @user_bp.route('/', methods=['POST'])
 def create_user():
     data = request.get_json()

@@ -4,6 +4,17 @@ from server.models.db import db
 
 yacht_bp = Blueprint('yachts', __name__, url_prefix='/yachts')
 
+
+@yacht_bp.route('/<int:id>', methods=['GET'])
+def get_yacht_by_id(id):
+    yacht = Yacht.query.get(id)
+    if not yacht:
+        return jsonify({"error": "Yacht not found"}), 404
+    return jsonify(yacht.to_dict()), 200
+
+
+
+
 @yacht_bp.route('/', methods=['GET'])
 def get_all_yachts():
     yachts = Yacht.query.all()
