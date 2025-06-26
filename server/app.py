@@ -1,7 +1,7 @@
 from flask import Flask
 from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
-from server.models import User 
+from server.models import User, Yacht, Booking, AddOn, BookingAddOn
 import os
 from server.config import Config
 from server.models.db import db, migrate 
