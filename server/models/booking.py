@@ -16,14 +16,14 @@ class Booking(db.Model):
     yacht = relationship("Yacht", back_populates="bookings")
     addons = relationship("BookingAddOn", back_populates="booking")
 
-
     def to_dict(self):
         return {
-           "id": self.id,
-            "user_id": self.user_id,
-            "yacht_id": self.yacht_id,
+            "id": self.id,
+            "user": self.user.to_dict(),           # ✅ user info
+            "yacht": self.yacht.to_dict(),         # ✅ yacht info
             "start_date": str(self.start_date),
             "end_date": str(self.end_date),
             "total_price": self.total_price,
-            "special_request": self.special_request
-    }
+            "special_request": self.special_request,
+            "addons": [a.to_dict() for a in self.addons]  # ✅ booking addons info
+        }
