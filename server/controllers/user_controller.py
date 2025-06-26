@@ -1,8 +1,7 @@
-# server/controllers/user_controller.py
-
 from flask import Blueprint, request, jsonify
 from server.models.user import User
 from server.models.db import db
+from werkzeug.security import generate_password_hash  # ✅ ADD THIS
 
 user_bp = Blueprint('users', __name__, url_prefix='/users')
 
@@ -15,10 +14,11 @@ def get_users():
 def create_user():
     data = request.get_json()
     try:
+        hashed_password = generate_password_hash(data['password'])  # ✅ HASHING HERE
         new_user = User(
             username=data['username'],
             email=data['email'],
-            password_hash=data['password']  # NOTE: Ideally hash this!
+            password_hash=hashed_password  # ✅ SECURE PASSWORD STORAGE
         )
         db.session.add(new_user)
         db.session.commit()
