@@ -11,6 +11,15 @@ class User(db.Model):
 
 
     bookings = relationship('Booking', back_populates='user')
+    
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "username": self.username,
+            "email": self.email
+        }   
 
     def __repr__(self):
         return f'<User {self.username}>'
+    
+

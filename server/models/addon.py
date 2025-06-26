@@ -9,3 +9,10 @@ class AddOn(db.Model):
     price = db.Column(db.Float, nullable=False)
 
     bookings = relationship("BookingAddOn", back_populates="addon")
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "name": self.name,
+            "price": self.price
+        }

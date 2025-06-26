@@ -13,3 +13,14 @@ class Yacht(db.Model):
     image_url = db.Column(db.String)
 
     bookings = relationship("Booking", back_populates="yacht")
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "name": self.name,
+            "description": self.description,
+            "location": self.location,
+            "price_per_day": self.price_per_day,
+            "capacity": self.capacity,
+            "image_url": self.image_url
+        }

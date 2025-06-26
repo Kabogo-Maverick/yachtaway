@@ -11,3 +11,11 @@ class BookingAddOn(db.Model):
 
     booking = relationship("Booking", back_populates="addons")
     addon = relationship("AddOn", back_populates="bookings")
+ 
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "booking_id": self.booking_id,
+            "addon_id": self.addon_id,
+            "note": self.note
+        }
