@@ -12,13 +12,13 @@ from server.controllers.user_controller import user_bp
 from server.controllers.booking_controller import booking_bp
 from server.controllers.addon_controller import addon_bp
 from server.controllers.booking_addon_controller import booking_addon_bp
-
+from server.controllers.auth_controller import auth_bp
 
 def create_app():
     app = Flask(__name__)
     app.config.from_object(Config)
 
-    CORS(app)
+    CORS(app, supports_credentials=True)
     db.init_app(app)
     migrate.init_app(app, db)
 
@@ -32,6 +32,7 @@ def create_app():
     app.register_blueprint(booking_bp)
     app.register_blueprint(addon_bp)
     app.register_blueprint(booking_addon_bp)
+    app.register_blueprint(auth_bp)
 
 
 
