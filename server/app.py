@@ -17,7 +17,10 @@ from server.controllers.auth_controller import auth_bp
 def create_app():
     app = Flask(__name__)
     app.config.from_object(Config)
+    app.secret_key = os.environ.get("SECRET_KEY", "dev-secret")  # ✅ important for session
 
+    app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL', 'postgresql://maverick:pharaoh@localhost:5432/yachtaway_db')
+    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     CORS(app, supports_credentials=True)
     db.init_app(app)
     migrate.init_app(app, db)
