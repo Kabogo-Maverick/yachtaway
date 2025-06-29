@@ -23,7 +23,7 @@ def get_my_bookings():
 def get_all_bookings():
     return jsonify([b.to_dict() for b in Booking.query.all()]), 200
 
-@booking_bp.route('/', methods=['POST'])  # 👈 No trailing slash to avoid CORS redirect bug
+# @booking_bp.route('/', methods=['POST'])  # 👈 No trailing slash to avoid CORS redirect bug
 @booking_bp.route('', methods=['POST'])  # 👈 No trailing slash to avoid CORS redirect bug
 def create_booking():
     print("🔐 [POST /bookings] Session:", session)
