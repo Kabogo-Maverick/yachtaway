@@ -1,7 +1,7 @@
 import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import API from "../api/api";
-import BookingForm from "../components/BookingForm";
+import BookingForm from "../pages/BookingForm";
 
 const YachtDetails = () => {
   const { id } = useParams();
