@@ -75,6 +75,48 @@ def create_booking():
         return jsonify({"error": str(e)}), 400
 
 
+
+
+@booking_bp.route('/<int:id>', methods=['PUT'])
+def update_booking(id):
+    user_id = session.get("user_id")
+    if not user_id:
+        return jsonify({"error": "Unauthorized"}), 401
+
+    booking = Booking.query.get(id)
+    if not booking or booking.user_id != user_id:
+        return jsonify({"error": "Booking not found or unauthorized"}), 404
+
+    try:
+        data = request.get_json()
+        start_date = datetime.strptime(data.get("start_date"), "%Y-%m-%d")
+        end_date = datetime.strptime(data.get("end_date"), "%Y-%m-%d")
+
+        if start_date >= end_date:
+            return jsonify({"error": "End date must be after start date"}), 400
+
+        booking.start_date = start_date
+        booking.end_date = end_date
+        booking.total_price = data.get("total_price", booking.total_price)
+        booking.special_request = data.get("special_request", booking.special_request)
+
+        # Optional: Remove and re-add addons
+        from server.models.booking_addon import BookingAddOn
+        db.session.query(BookingAddOn).filter_by(booking_id=booking.id).delete()
+
+        addon_ids = data.get("addon_ids", [])
+        for addon_id in addon_ids:
+            db.session.add(BookingAddOn(booking_id=booking.id, addon_id=addon_id))
+
+        db.session.commit()
+        return jsonify(booking.to_dict()), 200
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 400
+
+
+
+
 @booking_bp.route('/<int:id>', methods=['DELETE'])
 def delete_booking(id):
     user_id = session.get("user_id")
