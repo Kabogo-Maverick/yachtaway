@@ -34,8 +34,11 @@ const BookingForm = () => {
   };
 
   const handleBooking = async () => {
-    if (!user) return alert("Please log in to book");
-
+    if (!startDate || !endDate || !yacht) {
+      alert("Missing required fields");
+      return;
+    }
+  
     try {
       const response = await API.post("/bookings", {
         yacht_id: yacht.id,
@@ -43,15 +46,16 @@ const BookingForm = () => {
         end_date: endDate,
         total_price: yacht.price_per_day * calculateDays() + calculateTotalAddOnCost(),
         special_request: "Include drinks",
-        addon_ids: selectedAddons
+        addon_ids: selectedAddons, // ✅ Only if backend supports it
       });
       alert("Booking successful");
       navigate("/my-bookings");
     } catch (err) {
-      console.error(err);
+      console.error("Booking failed:", err.response?.data || err.message);
       alert("Booking failed");
     }
   };
+  
 
   if (!yacht) return <p>Loading...</p>;
 
