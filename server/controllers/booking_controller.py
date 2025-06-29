@@ -2,6 +2,7 @@ from flask import Blueprint, request, jsonify, session
 from datetime import datetime
 from server.models.booking import Booking
 from server.models.booking_addon import BookingAddOn
+from server.models.addon import AddOn
 from server.models.db import db
 
 booking_bp = Blueprint('bookings', __name__, url_prefix='/bookings')
@@ -19,7 +20,7 @@ def get_my_bookings():
 
 
 # ✅ Create new booking
-@booking_bp.route('', methods=['POST'])  # ⚠️ NO trailing slash to avoid preflight redirect issues
+@booking_bp.route('', methods=['POST'])
 def create_booking():
     user_id = session.get('user_id')
     if not user_id:
@@ -60,7 +61,7 @@ def create_booking():
 
 
 # ✅ Update existing booking
-@booking_bp.route('/<int:id>', methods=['PUT'])  # Ensure PUT is allowed
+@booking_bp.route('/<int:id>', methods=['PUT'])
 def update_booking(id):
     user_id = session.get('user_id')
     if not user_id:
@@ -72,24 +73,31 @@ def update_booking(id):
 
     try:
         data = request.get_json()
+
+        # ✅ STEP 3 — Fallback for missing yacht_id
+        yacht_id = data.get('yacht_id', booking.yacht_id)
+        if not yacht_id:
+            return jsonify({"error": "Missing yacht_id"}), 400
+        booking.yacht_id = yacht_id
+
+        # Update date and price
         start_date = datetime.strptime(data.get('start_date'), "%Y-%m-%d")
         end_date = datetime.strptime(data.get('end_date'), "%Y-%m-%d")
-        total_price = data.get('total_price')
-        special_request = data.get('special_request', "")
-        addon_ids = data.get('addon_ids', [])
-
         if start_date >= end_date:
             return jsonify({"error": "End date must be after start date"}), 400
 
-        # Update booking fields
         booking.start_date = start_date
         booking.end_date = end_date
-        booking.total_price = total_price
-        booking.special_request = special_request
+        booking.total_price = data.get('total_price')
+        booking.special_request = data.get('special_request', "")
 
-        # Remove old add-ons and re-add
+        # ✅ STEP 4 — Validate and update add-ons
+        addon_ids = data.get('addon_ids', [])
         BookingAddOn.query.filter_by(booking_id=booking.id).delete()
+
         for addon_id in addon_ids:
+            if not AddOn.query.get(addon_id):
+                return jsonify({"error": f"Addon {addon_id} not found"}), 400
             db.session.add(BookingAddOn(booking_id=booking.id, addon_id=addon_id))
 
         db.session.commit()

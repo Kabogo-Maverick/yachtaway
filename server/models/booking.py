@@ -12,18 +12,22 @@ class Booking(db.Model):
     total_price = db.Column(db.Float)
     special_request = db.Column(db.String)
 
+    # 🔗 Relationships
     user = relationship("User", back_populates="bookings")
     yacht = relationship("Yacht", back_populates="bookings")
-    addons = relationship("BookingAddOn", back_populates="booking")
+
+    # Rename this relationship so it's clear it's BookingAddOn objects (not just AddOns)
+    addon_links = relationship("BookingAddOn", back_populates="booking", cascade="all, delete-orphan")
 
     def to_dict(self):
         return {
             "id": self.id,
-            "user": self.user.to_dict(),           # ✅ user info
-            "yacht": self.yacht.to_dict(),         # ✅ yacht info
-            "start_date": str(self.start_date),
-            "end_date": str(self.end_date),
+            "user": self.user.to_dict(),           # ✅ include full user
+            "yacht": self.yacht.to_dict(),         # ✅ include full yacht
+            "start_date": self.start_date.strftime("%Y-%m-%d"),
+            "end_date": self.end_date.strftime("%Y-%m-%d"),
             "total_price": self.total_price,
             "special_request": self.special_request,
-            "addons": [a.to_dict() for a in self.addons]  # ✅ booking addons info
+            # ✅ return the actual add-ons, not the join table
+            "addons": [ba.addon.to_dict() for ba in self.addon_links]
         }
