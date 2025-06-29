@@ -29,5 +29,5 @@ class Booking(db.Model):
             "total_price": self.total_price,
             "special_request": self.special_request,
             # ✅ return the actual add-ons, not the join table
-            "addons": [ba.addon.to_dict() for ba in self.addon_links]
+            "addons": [ba.addon.to_dict() for ba in self.addon_links if ba.addon]
         }
