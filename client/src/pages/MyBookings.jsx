@@ -22,9 +22,11 @@ const MyBookings = () => {
   const handleEdit = (booking) => {
     setEditingId(booking.id);
     setEditedBooking({
+      yacht_id: booking.yacht.id,
+      yacht_price: booking.yacht.price, // ✅ Save yacht daily price
       start_date: booking.start_date,
       end_date: booking.end_date,
-      addon_ids: booking.addons.map((a) => a.id),
+      addon_ids: booking.addons.map((a) => a.id || a.addon?.id),
       total_price: booking.total_price,
       special_request: booking.special_request || "",
     });
@@ -39,43 +41,86 @@ const MyBookings = () => {
   };
 
   const handleUpdate = async () => {
+    const validAddonIds = addons.map((a) => a.id);
+    const filteredAddons = (editedBooking.addon_ids || []).filter((id) =>
+      validAddonIds.includes(id)
+    );
+
+    const selectedAddons = addons.filter((a) =>
+      filteredAddons.includes(a.id)
+    );
+    const addonCost = selectedAddons.reduce((sum, a) => sum + a.price, 0);
+
+    // ✅ Calculate number of days
+    const startDate = new Date(editedBooking.start_date);
+    const endDate = new Date(editedBooking.end_date);
+    const diffDays = Math.ceil(
+      (endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)
+    );
+    if (diffDays <= 0) {
+      alert("End date must be after start date.");
+      return;
+    }
+
+    const yachtDailyPrice = editedBooking.yacht_price || 0;
+    const yachtCost = yachtDailyPrice * diffDays;
+
+    const total = yachtCost + addonCost;
+
+    const payload = {
+      ...editedBooking,
+      addon_ids: filteredAddons,
+      total_price: total,
+    };
+
+    console.log("📤 Final payload:", payload);
+
     try {
-      const res = await API.put(`/bookings/${editingId}`, editedBooking, {
-        headers: {
-          "Content-Type": "application/json",
-        },
+      await API.put(`/bookings/${editingId}`, payload, {
+        headers: { "Content-Type": "application/json" },
+        withCredentials: true,
       });
-      setBookings((prev) =>
-        prev.map((b) => (b.id === res.data.id ? res.data : b))
-      );
+
+      const res = await API.get("/bookings/my");
+      setBookings(res.data);
       setEditingId(null);
     } catch (err) {
       console.error("❌ Update failed:", err.response?.data || err.message);
       alert("Update failed.");
     }
   };
-  
 
   return (
     <div style={{ padding: 24 }}>
       <h2>My Bookings</h2>
       {bookings.map((b) => (
-        <div key={b.id} style={{ border: "1px solid #ccc", marginBottom: 10, padding: 10 }}>
-          <p><strong>Yacht:</strong> {b.yacht.name}</p>
+        <div
+          key={b.id}
+          style={{ border: "1px solid #ccc", marginBottom: 10, padding: 10 }}
+        >
+          <p>
+            <strong>Yacht:</strong> {b.yacht.name}
+          </p>
           {editingId === b.id ? (
             <>
               <input
                 type="date"
                 value={editedBooking.start_date}
                 onChange={(e) =>
-                  setEditedBooking({ ...editedBooking, start_date: e.target.value })
+                  setEditedBooking({
+                    ...editedBooking,
+                    start_date: e.target.value,
+                  })
                 }
               />
               <input
                 type="date"
                 value={editedBooking.end_date}
                 onChange={(e) =>
-                  setEditedBooking({ ...editedBooking, end_date: e.target.value })
+                  setEditedBooking({
+                    ...editedBooking,
+                    end_date: e.target.value,
+                  })
                 }
               />
 
@@ -86,7 +131,9 @@ const MyBookings = () => {
                     <label>
                       <input
                         type="checkbox"
-                        checked={editedBooking.addon_ids?.includes(a.id) || false}
+                        checked={
+                          editedBooking.addon_ids?.includes(a.id) || false
+                        }
                         onChange={() => handleCheckboxChange(a.id)}
                       />
                       {a.name} (${a.price})
@@ -100,10 +147,24 @@ const MyBookings = () => {
             </>
           ) : (
             <>
-              <p><strong>From:</strong> {b.start_date}</p>
-              <p><strong>To:</strong> {b.end_date}</p>
-              <p><strong>Add-ons:</strong> {b.addons.map((a) => a.name).join(", ")}</p>
-              <p><strong>Total:</strong> ${b.total_price}</p>
+              <p>
+                <strong>From:</strong> {b.start_date}
+              </p>
+              <p>
+                <strong>To:</strong> {b.end_date}
+              </p>
+              <p>
+                <strong>Add-ons:</strong>{" "}
+                {b.addons.length > 0
+                  ? b.addons
+                      .map((a) => a.name || a.addon?.name)
+                      .filter(Boolean)
+                      .join(", ")
+                  : "None"}
+              </p>
+              <p>
+                <strong>Total:</strong> ${b.total_price}
+              </p>
               <button onClick={() => handleEdit(b)}>✏️ Edit</button>
               <button onClick={() => handleDelete(b.id)}>🗑️ Delete</button>
             </>

@@ -1,6 +1,6 @@
 # ✅ server/app.py
 
-from flask import Flask
+from flask import Flask, send_from_directory
 from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
 from flask_session import Session
@@ -58,6 +58,16 @@ def create_app():
     app.register_blueprint(yacht_bp)
     app.register_blueprint(booking_bp)
     app.register_blueprint(addon_bp)
+
+
+
+
+# Serve images from /server/images
+    @app.route('/images/<filename>')
+    def get_image(filename):
+       
+       return send_from_directory(os.path.join(app.root_path, 'images'), filename)
+
 
     # ✅ Default route (test server)
     @app.route('/')
