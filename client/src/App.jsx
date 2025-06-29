@@ -4,8 +4,10 @@ import Home from "./pages/Home";
 import YachtDetails from "./pages/YachtDetails";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
-import Navbar from "./components/Navbar"; // add this
+import BookingForm from "./pages/BookingForm"; // ✅ Import it
+import Navbar from "./components/Navbar";
 import './App.css';
+import MyBookings from "./pages/MyBookings";
 
 function App() {
   return (
@@ -14,9 +16,11 @@ function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/yachts/:id" element={<YachtDetails />} />
+        <Route path="/yachts/:id/book" element={<BookingForm />} /> {/* ✅ New route */}
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
-        {/* Add more routes as needed */}
+        <Route path="/my-bookings" element={<MyBookings />} /> {/* ✅ New route */}
+        {/* Add /my-bookings later */}
       </Routes>
     </>
   );
