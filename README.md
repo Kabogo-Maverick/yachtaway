@@ -21,26 +21,6 @@ Built with a **React frontend** and a **Flask + PostgreSQL backend**, it support
 
 ---
 
-## 📁 Project Structure
-
-yachtaway/
-├── client/ # React frontend
-│ ├── src/
-│ │ ├── components/ # Navbar, cards, etc.
-│ │ ├── pages/ # Pages: Home, YachtDetails, Bookings
-│ │ ├── context/ # AuthContext for session management
-│ │ └── styles/ # Custom CSS styles
-├── server/ # Flask backend
-│ ├── models/ # SQLAlchemy models
-│ ├── controllers/ # Blueprint route files
-│ ├── static/images/ # Yacht images (yacht1.jpeg, etc.)
-│ ├── seed/ # Seed script
-│ └── app.py # Flask app factory
-├── migrations/ # Flask-Migrate folder (after init)
-├── README.md # You're here
-├── Pipfile / Pipfile.lock # Python dependencies
-├── package.json # Frontend dependencies
-
 
 ## 🧪 Features
 
@@ -92,7 +72,10 @@ flask db upgrade
 flask run
 ```
 
-
+## View the Database
+```console
+psql yachtway_db
+```
 
 ## Frontend (React + Vite)
 Navigate to the client folder
