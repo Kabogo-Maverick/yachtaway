@@ -64,7 +64,7 @@ flask db upgrade
 
 ## Seed the database
 ```console
-
+python -m server.seed
 ```
 
 ## Run the Flask
@@ -74,7 +74,7 @@ flask run
 
 ## View the Database
 ```console
-psql yachtway_db
+psql yachtaway_db
 ```
 
 ## Frontend (React + Vite)
