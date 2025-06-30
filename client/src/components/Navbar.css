@@ -1,0 +1,55 @@
+/* src/components/Navbar.css */
+
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #041f3d;
+    color: white;
+    padding: 1rem 2rem;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  }
+  
+  .navbar a {
+    color: white;
+    text-decoration: none;
+    margin-right: 1rem;
+    font-weight: 500;
+    font-size: 1rem;
+  }
+  
+  .navbar a:hover {
+    color: #ffdd57;
+  }
+  
+  .navbar-user {
+    margin-right: 1rem;
+    font-style: italic;
+    font-weight: 400;
+  }
+  
+  .logout-btn {
+    background-color: #d9534f;
+    color: white;
+    border: none;
+    padding: 0.4rem 0.8rem;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+  }
+  
+  .logout-btn:hover {
+    background-color: #c9302c;
+  }
+  
+  .signup-link {
+    font-weight: bold;
+    color: #4dc4ff;
+  }
+  
+  .navbar-brand a {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: white;
+  }
+  
